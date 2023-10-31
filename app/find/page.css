@@ -1,0 +1,102 @@
+/* Page container */
+.page-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
+  
+  /* Section heading style */
+  .section-heading {
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  /* Input group style */
+  .input-group {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+  }
+  
+  /* Input text style */
+  .input-text {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  /* Remove button style */
+  .remove-button {
+    background-color: #FF5733;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  .remove-button:hover {
+    background-color: #D8411B;
+  }
+  
+  /* Add button style */
+  .add-button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+  }
+  
+  .add-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* User IDs section style */
+  .user-ids {
+    margin: 20px 0;
+  }
+  
+  /* Rating input style */
+  .rating-input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  /* Submit button style */
+  .submit-button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Problem display section style */
+  .problem-display {
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+  }
+  
+  /* Customize styles as needed */
+  

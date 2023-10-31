@@ -1,6 +1,7 @@
 'use client';
 import axios, { all } from 'axios';
 import React, { useEffect, useState } from 'react';
+import './page.css'
 
 function Page() {
   const [userIds, setUserIds] = useState(['']);
@@ -75,25 +76,26 @@ function Page() {
   };
 
   return (
-    <div>
+    <div className="page-container">
       <div>
-        <div>Enter the Codeforces IDs of the people participating in the mashup</div>
+        <div className="section-heading">Enter the Codeforces IDs of the people participating in the mashup</div>
         {userIds.map((id, index) => (
-          <div key={index}>
+          <div key={index} className="input-group">
             <input
               type="text"
               value={id}
               onChange={(e) => handleInputChange(e, index)}
               placeholder="Enter Codeforces ID"
+              className="input-text"
             />
             {userIds.length > 1 && (
-              <button onClick={() => handleRemoveUser(index)}>-</button>
+              <button onClick={() => handleRemoveUser(index)} className="remove-button">-</button>
             )}
           </div>
         ))}
-        <button onClick={handleAddUser}>+</button>
-        <div>
-          <div>Collected User IDs:</div>
+        <button onClick={handleAddUser} className="add-button">+</button>
+        <div className="user-ids">
+          <div className="section-heading">Collected User IDs:</div>
           <ul>
             {userIds.map((id, index) => (
               <li key={index}>{id}</li>
@@ -101,38 +103,25 @@ function Page() {
           </ul>
         </div>
         <div>
-          <div>Enter the problem rating that you want to find</div>
-          <input placeholder='rating' onChange={(e) => {
-            setRatingRequired(e.target.value);
-          }}/>
+          <div className="section-heading">Enter the problem rating that you want to find</div>
+          <input
+            placeholder="Rating"
+            onChange={(e) => setRatingRequired(e.target.value)}
+            className="rating-input"
+          />
         </div>
-
-        <button onClick={handleSubmit}> Submit </button>
+        <button onClick={handleSubmit} className="submit-button">Submit</button>
       </div>
-        {problemName && (
-        <div>
+      {problemName && (
+        <div className="problem-display">
           <h2>Selected Problem</h2>
-          <p>
-            Contest ID: {problemName.contestId}
-          </p>
-          <p>
-            Index: {problemName.index}
-          </p>
-          <p>
-            Name: {problemName.name}
-          </p>
-          <p>
-            Points: {problemName.points}
-          </p>
-          <p>
-            Rating: {problemName.rating}
-          </p>
-          <p>
-            Tags: {problemName.tags.join(', ')}
-          </p>
-          <p>
-            Type: {problemName.type}
-          </p>
+          <p>Contest ID: {problemName.contestId}</p>
+          <p>Index: {problemName.index}</p>
+          <p>Name: {problemName.name}</p>
+          <p>Points: {problemName.points}</p>
+          <p>Rating: {problemName.rating}</p>
+          <p>Tags: {problemName.tags.join(', ')}</p>
+          <p>Type: {problemName.type}</p>
         </div>
       )}
     </div>
