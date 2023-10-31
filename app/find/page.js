@@ -1,103 +1,142 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+'use client';
+import axios, { all } from 'axios';
+import React, { useEffect, useState } from 'react';
 
-class UnsolvedProblemFinder extends Component {
-  state = {
-    userHandles: '',
-    problemRating: '',
-    unsolvedProblem: null,
-  };
+function Page() {
+  const [userIds, setUserIds] = useState(['']);
+  const [ratingRequired, setRatingRequired] = useState('');
+  let allProblems = [];
+  let problems = [];
+  const [problemName, setProblemName] = useState();
 
-  handleInputChange = (event) => {
-    const { name, value } = event.target;
-    this.setState({ [name]: value });
-  };
+  useEffect(() => {
 
-  findUnsolvedProblem = async () => {
-    const { userHandles, problemRating } = this.state;
+  }, [setRatingRequired])
 
-    if (!userHandles || !problemRating) {
-      alert('Please provide user handles and problem rating.');
-      return;
+  const getSolvedProblems = async (handle) => {
+    try{
+      const response = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}&from=1&count=10000`);
+      const problemsData = response.data.result.map((problemdata) => problemdata.problem.name);
+      problems = [...problems, ...problemsData]
     }
-
-    try {
-      const response = await axios.get(`https://codeforces.com/api/problemset.problems?apiKey=YOUR_API_KEY`);
-      const problems = response.data.result.problems;
-      const handles = userHandles.split(',').map((handle) => handle.trim());
-
-      for (const problem of problems) {
-        let problemSolved = false;
-
-        for (const handle of handles) {
-          const userSubmissions = await axios.get(`https://codeforces.com/api/user.status?handle=${handle}&apiKey=YOUR_API_KEY`);
-          const userSolvedProblem = userSubmissions.data.result.find(
-            (submission) => submission.problem.name === problem.name && submission.verdict === 'OK'
-          );
-
-          if (userSolvedProblem) {
-            problemSolved = true;
-            break;
-          }
-        }
-
-        if (!problemSolved && problem.rating === +problemRating) {
-          this.setState({ unsolvedProblem: problem });
-          return;
-        }
-      }
-
-      this.setState({ unsolvedProblem: null });
-    } catch (error) {
-      console.error('Error:', error);
+    catch(error){
+      console.log(error);
     }
+   }
+
+   const getAllProblemsOfRating = async() => {
+    try{
+      const response = await axios.get(`https://codeforces.com/api/problemset.problems?rating=${ratingRequired}`);
+      allProblems = response.data.result.problems;
+    }
+    catch(error){
+      console.log(error);
+    }
+   }
+
+   const getNotSolvedProblem = async() => {
+    const unsolvedProblems = allProblems.filter((problem) => {
+      return (
+        !problems.includes(problem.name) &&
+        problem.rating !== undefined &&
+        problem.rating.toString() === ratingRequired
+      );
+    });
+    const randomIndex = Math.floor(Math.random() * unsolvedProblems.length);
+    setProblemName(unsolvedProblems[randomIndex]);
+   }
+
+   const handleSubmit = async () => {
+    problems = [];
+    await getAllProblemsOfRating();
+    const getSolvedProblemsPromises = userIds.map(async(userId) => {
+      return getSolvedProblems(userId)
+    })
+    await Promise.all(getSolvedProblemsPromises);
+    await getNotSolvedProblem();
+   }
+
+  const handleInputChange = (e, index) => {
+    const newIds = [...userIds];
+    newIds[index] = e.target.value;
+    setUserIds(newIds);
   };
 
-  render() {
-    const { userHandles, problemRating, unsolvedProblem } = this.state;
+  const handleAddUser = () => {
+    setUserIds([...userIds, '']); // Add an empty string to create a new input field
+    console.log(userIds);
+  };
 
-    return (
+  const handleRemoveUser = (index) => {
+    const newIds = [...userIds];
+    newIds.splice(index, 1);
+    setUserIds(newIds);
+    console.log(userIds)
+  };
+
+  return (
+    <div>
       <div>
-        <h1>Unsolved Problem Finder</h1>
-        <div>
-          <label>User Handles (comma-separated):</label>
-          <input
-            type="text"
-            name="userHandles"
-            value={userHandles}
-            onChange={this.handleInputChange}
-          />
-        </div>
-        <div>
-          <label>Problem Rating:</label>
-          <input
-            type="number"
-            name="problemRating"
-            value={problemRating}
-            onChange={this.handleInputChange}
-          />
-        </div>
-        <button onClick={this.findUnsolvedProblem}>Find Unsolved Problem</button>
-        {unsolvedProblem && (
-          <div>
-            <h2>Unsolved Problem Found:</h2>
-            <p>Name: {unsolvedProblem.name}</p>
-            <p>Rating: {unsolvedProblem.rating}</p>
-            <p>
-              Problem Link:{' '}
-              <a
-                href={`https://codeforces.com/problemset/problem/${unsolvedProblem.contestId}/${unsolvedProblem.index}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View Problem
-              </a>
-            </p>
+        <div>Enter the Codeforces IDs of the people participating in the mashup</div>
+        {userIds.map((id, index) => (
+          <div key={index}>
+            <input
+              type="text"
+              value={id}
+              onChange={(e) => handleInputChange(e, index)}
+              placeholder="Enter Codeforces ID"
+            />
+            {userIds.length > 1 && (
+              <button onClick={() => handleRemoveUser(index)}>-</button>
+            )}
           </div>
-        )}
+        ))}
+        <button onClick={handleAddUser}>+</button>
+        <div>
+          <div>Collected User IDs:</div>
+          <ul>
+            {userIds.map((id, index) => (
+              <li key={index}>{id}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div>Enter the problem rating that you want to find</div>
+          <input placeholder='rating' onChange={(e) => {
+            setRatingRequired(e.target.value);
+          }}/>
+        </div>
+
+        <button onClick={handleSubmit}> Submit </button>
       </div>
-    );
-  }
+        {problemName && (
+        <div>
+          <h2>Selected Problem</h2>
+          <p>
+            Contest ID: {problemName.contestId}
+          </p>
+          <p>
+            Index: {problemName.index}
+          </p>
+          <p>
+            Name: {problemName.name}
+          </p>
+          <p>
+            Points: {problemName.points}
+          </p>
+          <p>
+            Rating: {problemName.rating}
+          </p>
+          <p>
+            Tags: {problemName.tags.join(', ')}
+          </p>
+          <p>
+            Type: {problemName.type}
+          </p>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default UnsolvedProblemFinder;
+export default Page;
