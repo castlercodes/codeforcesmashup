@@ -36,13 +36,14 @@ function Page() {
    }
 
    const getNotSolvedProblem = async() => {
-    const unsolvedProblems = allProblems.filter((problem) => {
+    let unsolvedProblems = allProblems.filter((problem) => {
       return (
         !problems.includes(problem.name) &&
         problem.rating !== undefined &&
         problem.rating.toString() === ratingRequired
       );
     });
+    unsolvedProblems = unsolvedProblems.slice(0, 10);
     const randomIndex = Math.floor(Math.random() * unsolvedProblems.length);
     setProblemName(unsolvedProblems[randomIndex]);
    }
